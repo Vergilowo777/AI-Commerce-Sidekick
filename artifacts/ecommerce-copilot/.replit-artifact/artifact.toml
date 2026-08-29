@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "电商 AI 经营副驾驶"
+description = "面向中国大陆中小型电商商家的在线经营副驾驶 MVP，提供经营 Dashboard、商品订单库存管理、规则化 AI 分析、经营助手、营销文案和可确认执行的 Agent 操作体验。"
+version = "1.0.0"
+id = "artifacts/ecommerce-copilot"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 18145
+
+[services.development]
+run = "pnpm --filter @workspace/ecommerce-copilot run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/ecommerce-copilot", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/ecommerce-copilot/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "18145"
+BASE_PATH = "/"

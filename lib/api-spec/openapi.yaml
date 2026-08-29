@@ -1,0 +1,133 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: ai
+    description: AI explanation operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /ai/status:
+    get:
+      operationId: getAiStatus
+      tags: [ai]
+      summary: Get AI provider status
+      description: Returns whether the optional DeepSeek explanation provider is configured
+      responses:
+        "200":
+          description: AI provider status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AiStatus"
+  /ai/chat:
+    post:
+      operationId: createAiChat
+      tags: [ai]
+      summary: Explain structured ecommerce analysis
+      description: Explains application-generated facts without allowing the model to invent business metrics
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AiChatInput"
+      responses:
+        "200":
+          description: AI explanation result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AiChatResult"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    AiStatus:
+      type: object
+      properties:
+        configured:
+          type: boolean
+        provider:
+          type: string
+        message:
+          type: string
+      required:
+        - configured
+        - provider
+        - message
+    AiChatInput:
+      type: object
+      properties:
+        question:
+          type: string
+          minLength: 1
+        intent:
+          type: string
+          minLength: 1
+        demoAnswer:
+          type: string
+          minLength: 1
+        facts:
+          type: object
+          additionalProperties: true
+      required:
+        - question
+        - intent
+        - demoAnswer
+        - facts
+    AiChatResult:
+      type: object
+      properties:
+        answer:
+          type: string
+        source:
+          type: string
+          enum: [deepseek, demo]
+        configured:
+          type: boolean
+        notice:
+          type: ["string", "null"]
+      required:
+        - answer
+        - source
+        - configured
+        - notice
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
